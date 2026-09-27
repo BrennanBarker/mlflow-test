@@ -1,5 +1,3 @@
-from mlflow.genai.judges.prompts.summarization import SUMMARIZATION_PROMPT
-
 from mlflow.genai.judges import make_judge
 
 INSTRUCTIONS = """Consider the following source document and candidate summary.
@@ -19,13 +17,21 @@ When producing your rationale, ensure that you include a concise description of 
 <summary>{{ outputs }}</summary>
 """
 
-judge = make_judge(
-    name="summary_faithfulness",
-    description="Check whether every concrete claim in a summary is supported by its source material.",
-    model="openai:/gpt-5.4-mini-2026-03-17",
-    feedback_value_type=bool,
-    generate_rationale_first=True,
-    instructions=INSTRUCTIONS
-)
+def build_faithfulness_judge(model: str = "openai:/gpt-5.4-mini-2026-03-17"):
+    return make_judge(
+        name="summary_faithfulness",
+        description="Check whether every concrete claim in a summary is supported by its source material.",
+        model=model,
+        feedback_value_type=bool,
+        generate_rationale_first=True,
+        instructions=INSTRUCTIONS,
+    )
 
-feedback = judge(inputs={"document": "test"}, outputs={"dang": "cool"})
+
+if __name__ == "__main__":
+    judge = build_faithfulness_judge()
+    feedback = judge(
+        inputs="Prison Link Cymru had 1,099 referrals in 2015-16.",
+        outputs="Prison Link Cymru had over a thousand referrals last year.",
+    )
+    print(feedback.value, feedback.rationale)

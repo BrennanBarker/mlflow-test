@@ -18,11 +18,23 @@ class Corruption(BaseModel):
     corruption_description: str
 
 
+class VerificationResult(BaseModel):
+    valid: bool
+    rationale: str
+
+
+class RationaleComparison(BaseModel):
+    matches: bool
+    rationale: str
+
+
 @dataclass
 class EvaluationExample:
+    example_id: str
     source: str
     summary: str
     expected_faithful: bool
+    held_out: bool
 
     # Metadata for analysis/debugging.
     corruption_target: str | None = None
