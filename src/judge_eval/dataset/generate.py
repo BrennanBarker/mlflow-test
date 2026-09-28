@@ -2,7 +2,7 @@
 
 Samples gold (document, summary) pairs from XSum, augments each with a
 verified corruption of the summary and of the source, and writes the
-resulting examples (clean + corrupted) to dataset/generated/examples.parquet.
+resulting examples (clean + corrupted) to data/generated/examples.parquet.
 """
 import argparse
 import dataclasses
@@ -11,10 +11,10 @@ import os
 import openai
 import pandas as pd
 
-from dataset.augment import augment_row
+from judge_eval.dataset.augment import augment_row
 
-GOLD_PATH = "dataset/original/xsum/test.parquet"
-OUTPUT_PATH = "dataset/generated/examples.parquet"
+GOLD_PATH = "data/original/xsum/test.parquet"
+OUTPUT_PATH = "data/generated/examples.parquet"
 
 
 def main(n_samples: int) -> None:

@@ -2,8 +2,9 @@ from typing import Literal
 
 import openai
 
+from judge_eval.common.structured_call import structured_call
+
 from .types import Corruption, VerificationResult
-from structured_call import structured_call
 
 VERIFICATION_PROMPTS = {
     "summary": """\

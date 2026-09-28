@@ -1,4 +1,4 @@
-"""Score a faithfulness judge's output against the labeled dataset produced by generate_dataset.py.
+"""Score a faithfulness judge's output against the labeled dataset produced by `judge-eval generate-dataset`.
 
 Implements the four cases from README.md by comparing the judge's verdict
 (True = judge says faithful) against EvaluationExample.expected_faithful.
@@ -9,9 +9,9 @@ from typing import Literal
 import openai
 from mlflow.entities.assessment import Feedback
 
-from dataset.types import EvaluationExample, RationaleComparison
-from models import REFEREE_MODEL
-from structured_call import structured_call
+from judge_eval.common.models import REFEREE_MODEL
+from judge_eval.common.structured_call import structured_call
+from judge_eval.dataset.types import EvaluationExample, RationaleComparison
 
 COMPARISON_PROMPT = """\
 You are checking whether a faithfulness judge caught the *same* problem

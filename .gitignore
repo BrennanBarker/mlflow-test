@@ -1,5 +1,5 @@
-dataset/original/
-dataset/generated/
+data/original/
+data/generated/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -2,10 +2,11 @@ from typing import Literal
 
 import openai
 
+from judge_eval.common.models import CORRUPTION_MODEL, REFEREE_MODEL
+
 from .generate_corruption import generate_corruption
-from .verify import verify_corruption
 from .types import Corruption, EvaluationExample
-from models import CORRUPTION_MODEL, REFEREE_MODEL
+from .verify import verify_corruption
 
 
 def _validate_corruption(

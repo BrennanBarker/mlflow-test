@@ -11,17 +11,18 @@ import openai
 import pandas as pd
 from mlflow.genai.judges import CategoricalRating, is_grounded
 
-from dataset.types import EvaluationExample
-from faithfulness_judge import build_faithfulness_judge
-from judge_evaluator import evaluate_judge_output
+from judge_eval.dataset.types import EvaluationExample
 
-DATASET_PATH = "dataset/generated/examples.parquet"
-RESULTS_DIR = "dataset/generated/results"
+from .evaluator import evaluate_judge_output
+from .faithfulness_judge import build_faithfulness_judge
+
+DATASET_PATH = "data/generated/examples.parquet"
+RESULTS_DIR = "data/generated/results"
 
 
 @dataclass
 class NormalizedFeedback:
-    """Backend-agnostic judge output: judge_evaluator only ever sees this shape."""
+    """Backend-agnostic judge output: evaluator.py only ever sees this shape."""
     value: bool
     rationale: str
     unknown: bool = False

@@ -2,8 +2,9 @@ from typing import Literal
 
 import openai
 
+from judge_eval.common.structured_call import structured_call
+
 from .types import Corruption
-from structured_call import structured_call
 
 CORRUPTION_PROMPTS = {
     "summary": """\
