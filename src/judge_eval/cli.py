@@ -6,9 +6,10 @@
 import argparse
 
 from judge_eval.common.models import DEFAULT_JUDGE_MODEL
+from judge_eval.common.tracking import enable_autologging
 from judge_eval.dataset.generate import main as generate_dataset
-from judge_eval.judge.run import JUDGE_BACKENDS
-from judge_eval.judge.run import main as run_evaluation
+from judge_eval.harness.run import JUDGE_BACKENDS
+from judge_eval.harness.run import main as run_evaluation
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -31,6 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    enable_autologging()
     args = build_parser().parse_args()
 
     if args.command == "generate-dataset":

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Generate a labeled faithfulness-judge dataset and evaluate judges against it."
 requires-python = ">=3.11"
 dependencies = [
+    "litellm",
     "mlflow",
     "openai",
     "pandas",
