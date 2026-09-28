@@ -1,5 +1,4 @@
 """Run a faithfulness judge over the generated dataset and score it with the Judge Evaluator."""
-import argparse
 import dataclasses
 import os
 import re
@@ -123,12 +122,3 @@ def main(judge_kind: str, judge_model: str, split: str) -> None:
         .apply(lambda s: (s == "success").mean())
     )
     print(f"\nFull results written to {results_path}")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--judge", choices=list(JUDGE_BACKENDS), default="custom")
-    parser.add_argument("--judge-model", default="openai:/gpt-5.4-mini-2026-03-17")
-    parser.add_argument("--split", choices=["opt", "eval", "all"], default="all")
-    args = parser.parse_args()
-    main(args.judge, args.judge_model, args.split)

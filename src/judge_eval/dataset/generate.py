@@ -4,7 +4,6 @@ Samples gold (document, summary) pairs from XSum, augments each with a
 verified corruption of the summary and of the source, and writes the
 resulting examples (clean + corrupted) to data/generated/examples.parquet.
 """
-import argparse
 import dataclasses
 import os
 
@@ -16,6 +15,10 @@ from judge_eval.dataset.augment import augment_row
 GOLD_PATH = "data/original/xsum/test.parquet"
 OUTPUT_PATH = "data/generated/examples.parquet"
 
+# Every HELD_OUT_MODULUS-th gold row (by id) is held out as the "eval" split,
+# never touched during judge/prompt optimization -- i.e. a 1-in-5, ~20% split.
+HELD_OUT_MODULUS = 5
+
 
 def main(n_samples: int) -> None:
     gold = pd.read_parquet(GOLD_PATH).sample(n_samples, random_state=0)
@@ -25,7 +28,7 @@ def main(n_samples: int) -> None:
     examples = []
     dropped = 0
     for row in gold.itertuples():
-        held_out = int(row.id) % 5 == 0
+        held_out = int(row.id) % HELD_OUT_MODULUS == 0
         row_examples = augment_row(
             client,
             row.document,
@@ -49,10 +52,3 @@ def main(n_samples: int) -> None:
     print(f"  clean: {n_clean}, corrupted: {n_corrupted}, dropped by verification: {dropped}")
     print(f"  held out: {n_held_out}, available for optimization: {len(out_df) - n_held_out}")
     print(out_df.groupby(["corruption_target", "corruption_type"]).size())
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--n-samples", type=int, default=50)
-    args = parser.parse_args()
-    main(args.n_samples)

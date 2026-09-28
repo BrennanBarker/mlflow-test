@@ -1,5 +1,7 @@
 from mlflow.genai.judges import make_judge
 
+from judge_eval.common.models import DEFAULT_JUDGE_MODEL
+
 INSTRUCTIONS = """Consider the following source document and candidate summary.
 You must decide whether the summary includes information not present in the source document.
 
@@ -17,7 +19,7 @@ When producing your rationale, ensure that you include a concise description of 
 <summary>{{ outputs }}</summary>
 """
 
-def build_faithfulness_judge(model: str = "openai:/gpt-5.4-mini-2026-03-17"):
+def build_faithfulness_judge(model: str = DEFAULT_JUDGE_MODEL):
     return make_judge(
         name="summary_faithfulness",
         description="Check whether every concrete claim in a summary is supported by its source material.",
@@ -26,12 +28,3 @@ def build_faithfulness_judge(model: str = "openai:/gpt-5.4-mini-2026-03-17"):
         generate_rationale_first=True,
         instructions=INSTRUCTIONS,
     )
-
-
-if __name__ == "__main__":
-    judge = build_faithfulness_judge()
-    feedback = judge(
-        inputs="Prison Link Cymru had 1,099 referrals in 2015-16.",
-        outputs="Prison Link Cymru had over a thousand referrals last year.",
-    )
-    print(feedback.value, feedback.rationale)
