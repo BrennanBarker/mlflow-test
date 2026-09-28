@@ -6,12 +6,13 @@ this only depends on the normalized judge output and the dataset's labels, not
 on how the judge under test is built.
 """
 from dataclasses import dataclass
+from functools import lru_cache
 
 import openai
 from mlflow.entities import Feedback
 from mlflow.genai.scorers import Scorer
 
-from judge_eval.common.models import REFEREE_MODEL
+from judge_eval.common.models import RATIONALE_COMPARISON_MODEL
 from judge_eval.common.structured_call import structured_call
 from judge_eval.dataset.types import RationaleComparison
 
@@ -38,15 +39,23 @@ class NormalizedFeedback:
     unknown: bool = False
 
 
+# Unbounded: GEPA-style optimization re-runs the same dataset across many
+# candidate prompts, and near-converged candidates often repeat a prior
+# trial's rationale verbatim for a given example -- caching on the
+# (description, rationale, model) triple skips a real referee call whenever
+# that happens. Requires compare_rationales to build its own client rather
+# than take one as an argument, since arguments must be hashable for
+# lru_cache and an openai.OpenAI() instance isn't (and isn't stable across
+# calls anyway).
+@lru_cache(maxsize=None)
 def compare_rationales(
-    client: openai.OpenAI,
     corruption_description: str,
     judge_rationale: str,
     *,
     model: str,
 ) -> RationaleComparison:
     return structured_call(
-        client,
+        openai.OpenAI(),
         model=model,
         system_prompt=COMPARISON_PROMPT,
         user_content=(
@@ -68,7 +77,7 @@ class FaithfulnessEvaluator(Scorer):
     """
 
     name: str = "faithfulness_evaluator"
-    referee_model: str = REFEREE_MODEL
+    referee_model: str = RATIONALE_COMPARISON_MODEL
 
     def __call__(self, *, outputs: NormalizedFeedback, expectations: dict) -> list[Feedback]:
         judge_says_faithful = bool(outputs.value)
@@ -95,7 +104,6 @@ class FaithfulnessEvaluator(Scorer):
         # Case 4: judge correctly flagged a corrupted example -- confirm it's
         # for the right reason.
         comparison = compare_rationales(
-            openai.OpenAI(),
             corruption_description,
             judge_rationale,
             model=self.referee_model,
